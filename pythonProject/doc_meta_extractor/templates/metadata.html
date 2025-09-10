@@ -5,41 +5,97 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Extracted Metadata
-                </h4>
-                <span class="badge bg-light text-dark">{{ filename }}</span>
+        <div class="card fade-in">
+            <div class="card-header text-white d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Metadata Extraction Complete
+                    </h4>
+                    <p class="mb-0 opacity-75">
+                        <small>
+                            <i class="fas fa-file me-1"></i>
+                            {{ filename }}
+                            {% if file_size %}
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-weight me-1"></i>
+                                {{ file_size }}
+                            {% endif %}
+                        </small>
+                    </p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge bg-success fs-6 p-2">
+                        <i class="fas fa-check-circle me-1"></i>
+                        {{ metadata|length }} Properties Found
+                    </span>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th style="width: 30%;">Property</th>
-                                <th>Value</th>
+                                <th style="width: 35%;">
+                                    <i class="fas fa-tag me-2"></i>
+                                    Property
+                                </th>
+                                <th>
+                                    <i class="fas fa-info me-2"></i>
+                                    Value
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for key, value in metadata.items() %}
-                            <tr>
-                                <td class="fw-semibold">{{ key }}</td>
+                            <tr class="metadata-row">
+                                <td class="fw-semibold">
+                                    {% if 'Date' in key or 'Created' in key or 'Modified' in key %}
+                                        <i class="fas fa-calendar-alt text-primary metadata-icon"></i>
+                                    {% elif 'Author' in key or 'Creator' in key or 'Modified By' in key %}
+                                        <i class="fas fa-user text-success metadata-icon"></i>
+                                    {% elif 'Pages' in key or 'Paragraphs' in key or 'Tables' in key or 'Word Count' in key or 'Character Count' in key or 'Sections' in key %}
+                                        <i class="fas fa-chart-bar text-info metadata-icon"></i>
+                                    {% elif 'File' in key %}
+                                        <i class="fas fa-file text-secondary metadata-icon"></i>
+                                    {% elif 'Hash' in key or 'Encrypted' in key %}
+                                        <i class="fas fa-shield-alt text-warning metadata-icon"></i>
+                                    {% elif 'Title' in key or 'Subject' in key %}
+                                        <i class="fas fa-heading text-primary metadata-icon"></i>
+                                    {% elif 'Keywords' in key or 'Category' in key %}
+                                        <i class="fas fa-tags text-info metadata-icon"></i>
+                                    {% elif 'Version' in key or 'Revision' in key %}
+                                        <i class="fas fa-code-branch text-secondary metadata-icon"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle text-muted metadata-icon"></i>
+                                    {% endif %}
+                                    {{ key }}
+                                </td>
                                 <td>
                                     {% if value and value != 'Not specified' and value != 'Not available' %}
-                                        {% if 'Date' in key %}
-                                            <i class="fas fa-calendar-alt text-muted me-1"></i>
-                                        {% elif 'Author' in key or 'Creator' in key %}
-                                            <i class="fas fa-user text-muted me-1"></i>
-                                        {% elif 'Pages' in key or 'Paragraphs' in key or 'Tables' in key or 'Word Count' in key %}
-                                            <i class="fas fa-hashtag text-muted me-1"></i>
-                                        {% elif 'File' in key %}
-                                            <i class="fas fa-file text-muted me-1"></i>
+                                        {% if 'Hash' in key %}
+                                            <code class="text-monospace small bg-light p-1 rounded">{{ value[:16] }}...</code>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('{{ value }}')" title="Copy full hash">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        {% elif 'Encrypted' in key and value == 'Yes' %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-lock me-1"></i>{{ value }}
+                                            </span>
+                                        {% elif 'Encrypted' in key and value == 'No' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-unlock me-1"></i>{{ value }}
+                                            </span>
+                                        {% elif key in ['Number of Pages', 'Number of Paragraphs', 'Number of Tables', 'Approximate Word Count', 'Character Count', 'Number of Sections'] %}
+                                            <span class="badge bg-primary fs-6">{{ value }}</span>
+                                        {% else %}
+                                            {{ value }}
                                         {% endif %}
-                                        {{ value }}
                                     {% else %}
-                                        <span class="text-muted fst-italic">{{ value }}</span>
+                                        <span class="text-muted fst-italic">
+                                            <i class="fas fa-minus-circle me-1"></i>
+                                            {{ value }}
+                                        </span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -48,19 +104,72 @@
                     </table>
                 </div>
                 
-                <div class="mt-4 d-flex gap-2 flex-wrap">
-                    <a href="{{ url_for('upload_file') }}" class="btn btn-primary">
-                        <i class="fas fa-upload me-2"></i>
-                        Upload Another File
-                    </a>
-                    <button class="btn btn-outline-secondary" onclick="window.print()">
-                        <i class="fas fa-print me-2"></i>
-                        Print Results
-                    </button>
-                    <button class="btn btn-outline-info" onclick="copyToClipboard()">
-                        <i class="fas fa-copy me-2"></i>
-                        Copy to Clipboard
-                    </button>
+                <div class="p-4 bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('upload_file') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-upload me-2"></i>
+                                Upload Another File
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100" onclick="window.print()">
+                                <i class="fas fa-print me-2"></i>
+                                Print Results
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-info w-100" onclick="copyAllToClipboard()">
+                                <i class="fas fa-copy me-2"></i>
+                                Copy All Data
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-success w-100" onclick="exportToJSON()">
+                                <i class="fas fa-download me-2"></i>
+                                Export JSON
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Stats -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="fas fa-chart-pie me-2"></i>
+                                Quick Summary
+                            </h6>
+                        </div>
+                        {% set summary_items = [] %}
+                        {% for key, value in metadata.items() %}
+                            {% if key in ['Number of Pages', 'Approximate Word Count', 'Character Count', 'Number of Paragraphs'] and value != 'Not specified' and value != 'Not available' %}
+                                {% set _ = summary_items.append((key, value)) %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for key, value in summary_items %}
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="text-center p-2 bg-white rounded border">
+                                <div class="fs-4 fw-bold text-primary">{{ value }}</div>
+                                <small class="text-muted">{{ key.replace('Number of ', '').replace('Approximate ', '') }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Notice -->
+        <div class="alert alert-info mt-4 fade-in">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-shield-alt text-info me-3 fs-4"></i>
+                <div>
+                    <h6 class="mb-1">Data Security Notice</h6>
+                    <small>
+                        Your file has been processed securely and no data has been stored on our servers. 
+                        The file hash provided ensures data integrity and can be used to verify the file hasn't been modified.
+                    </small>
                 </div>
             </div>
         </div>
@@ -70,32 +179,144 @@
 
 {% block scripts %}
 <script>
-function copyToClipboard() {
+// Copy individual value to clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Hash copied to clipboard!', 'success');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast('Hash copied to clipboard!', 'success');
+    });
+}
+
+// Copy all metadata to clipboard
+function copyAllToClipboard() {
     const table = document.querySelector('table');
-    const rows = table.querySelectorAll('tr');
-    let text = 'Document Metadata:\n\n';
+    const rows = table.querySelectorAll('tbody tr');
+    let text = `Document Metadata Report\n`;
+    text += `File: {{ filename }}\n`;
+    text += `Generated: ${new Date().toLocaleString()}\n`;
+    text += `${'='.repeat(50)}\n\n`;
     
-    rows.forEach((row, index) => {
-        if (index === 0) return; // Skip header
+    rows.forEach((row) => {
         const cells = row.querySelectorAll('td');
         if (cells.length === 2) {
-            text += `${cells[0].textContent.trim()}: ${cells[1].textContent.trim()}\n`;
+            const property = cells[0].textContent.trim();
+            const value = cells[1].textContent.trim();
+            text += `${property}: ${value}\n`;
         }
     });
     
+    text += `\n${'='.repeat(50)}\n`;
+    text += `Report generated by Document Metadata Extractor\n`;
+    text += `https://johndcyber.com\n`;
+    
     navigator.clipboard.writeText(text).then(() => {
-        const btn = event.target.closest('button');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
-        btn.classList.remove('btn-outline-info');
-        btn.classList.add('btn-success');
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-outline-info');
-        }, 2000);
+        showToast('All metadata copied to clipboard!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy to clipboard', 'error');
     });
 }
+
+// Export metadata as JSON
+function exportToJSON() {
+    const metadata = {};
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 2) {
+            const key = cells[0].textContent.trim();
+            const value = cells[1].textContent.trim();
+            metadata[key] = value;
+        }
+    });
+    
+    const exportData = {
+        filename: '{{ filename }}',
+        extractedAt: new Date().toISOString(),
+        metadata: metadata
+    };
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `metadata_${Date.now()}.json`;
+    link.click();
+    
+    showToast('Metadata exported as JSON!', 'success');
+}
+
+// Show toast notification
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove toast element after it's hidden
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+
+// Create toast container if it doesn't exist
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '9999';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Add hover effects to table rows
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.metadata-row');
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(13, 110, 253, 0.05)';
+        });
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+
+// Print styles
+const printStyles = `
+    @media print {
+        .btn, .alert { display: none !important; }
+        .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        .table { font-size: 12px; }
+        body { background: white !important; }
+    }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = printStyles;
+document.head.appendChild(styleSheet);
 </script>
 {% endblock %}

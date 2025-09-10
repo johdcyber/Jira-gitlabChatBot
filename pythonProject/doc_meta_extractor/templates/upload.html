@@ -5,60 +5,156 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
+        <div class="card fade-in">
+            <div class="card-header text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-upload me-2"></i>
-                    Upload Document
+                    <i class="fas fa-cloud-upload-alt me-2"></i>
+                    Upload Document for Metadata Extraction
                 </h4>
-            </div>
-            <div class="card-body">
-                <p class="text-muted mb-4">
-                    Upload a .docx or .pdf file to extract its metadata information.
-                    Maximum file size: 16MB.
+                <p class="mb-0 mt-2 opacity-75">
+                    <small>Securely extract comprehensive metadata from your documents</small>
                 </p>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Upload a <strong>.docx</strong> or <strong>.pdf</strong> file to extract detailed metadata information including author, creation date, modification history, and document structure.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="badge bg-primary fs-6 p-2">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Max: 16MB
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    {{ form.hidden_tag() }}
+                    
                     <div class="drag-drop-area" id="dragDropArea">
-                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                        <h5>Drag and drop your file here</h5>
-                        <p class="text-muted">or click to browse</p>
-                        <input type="file" class="form-control d-none" id="file" name="file" 
-                               accept=".docx,.pdf" required>
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt fa-4x text-primary mb-3"></i>
+                            <h5 class="mb-2">Drag and drop your file here</h5>
+                            <p class="text-muted mb-3">or click to browse your computer</p>
+                            {{ form.file(class="form-control d-none", id="file", accept=".docx,.pdf") }}
+                            <div class="supported-formats mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-file-word text-primary me-1"></i> DOCX
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-file-pdf text-danger me-1"></i> PDF
+                                </small>
+                            </div>
+                        </div>
                     </div>
                     
+                    <!-- Progress Bar -->
+                    <div class="mt-3" id="progressContainer" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Uploading...</small>
+                            <small class="text-muted" id="progressText">0%</small>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" id="progressBar"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- File Info -->
                     <div class="mt-3" id="fileInfo" style="display: none;">
-                        <div class="alert alert-info">
-                            <i class="fas fa-file me-2"></i>
-                            <span id="fileName"></span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="removeFile">
+                        <div class="alert alert-info d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <i class="fas fa-file me-2"></i>
+                                <span id="fileName" class="fw-semibold"></span>
+                                <br>
+                                <small class="text-muted">
+                                    <span id="fileSize"></span> • 
+                                    <span id="fileType"></span>
+                                </small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="removeFile" title="Remove file">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                     
+                    <!-- Submit Button -->
                     <div class="d-grid gap-2 mt-4">
-                        <button class="btn btn-primary btn-lg" type="submit" id="submitBtn" disabled>
-                            <i class="fas fa-search me-2"></i>
-                            Extract Metadata
-                        </button>
+                        {{ form.submit(class="btn btn-primary btn-lg", id="submitBtn", disabled=true) }}
                     </div>
                 </form>
                 
-                <div class="mt-4">
-                    <h6>Supported file types:</h6>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-file-word text-primary me-2"></i>
-                                <span>Microsoft Word (.docx)</span>
+                <!-- Features Section -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">
+                            <i class="fas fa-star me-2"></i>
+                            What you'll get:
+                        </h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="feature-icon me-3">
+                                    <i class="fas fa-user-circle text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Author Information</h6>
+                                    <small class="text-muted">Creator, last modified by, revision history</small>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-file-pdf text-danger me-2"></i>
-                                <span>PDF Documents (.pdf)</span>
+                        <div class="feature-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="feature-icon me-3">
+                                    <i class="fas fa-calendar-alt text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Date & Time</h6>
+                                    <small class="text-muted">Creation, modification, and access dates</small>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="feature-icon me-3">
+                                    <i class="fas fa-chart-bar text-info"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Document Stats</h6>
+                                    <small class="text-muted">Word count, pages, tables, sections</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="feature-icon me-3">
+                                    <i class="fas fa-shield-alt text-warning"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Security Info</h6>
+                                    <small class="text-muted">Encryption status, file integrity hash</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Notice -->
+                <div class="alert alert-light border mt-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-lock text-success me-3 fs-4"></i>
+                        <div>
+                            <h6 class="mb-1">Privacy & Security</h6>
+                            <small class="text-muted">
+                                Your files are processed locally and never stored on our servers. 
+                                All data is handled securely and deleted immediately after processing.
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -75,56 +171,177 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('file');
     const fileInfo = document.getElementById('fileInfo');
     const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileType = document.getElementById('fileType');
     const removeFile = document.getElementById('removeFile');
     const submitBtn = document.getElementById('submitBtn');
     const uploadForm = document.getElementById('uploadForm');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    // File size formatter
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Get file type description
+    function getFileTypeDescription(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        switch(ext) {
+            case 'docx': return 'Microsoft Word Document';
+            case 'pdf': return 'PDF Document';
+            default: return 'Unknown';
+        }
+    }
 
     // Click to browse
-    dragDropArea.addEventListener('click', () => fileInput.click());
-
-    // Drag and drop events
-    dragDropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dragDropArea.classList.add('dragover');
-    });
-
-    dragDropArea.addEventListener('dragleave', () => {
-        dragDropArea.classList.remove('dragover');
-    });
-
-    dragDropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dragDropArea.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInput.files = files;
-            handleFileSelect();
+    dragDropArea.addEventListener('click', (e) => {
+        if (e.target !== removeFile) {
+            fileInput.click();
         }
     });
+
+    // Drag and drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dragDropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        dragDropArea.classList.add('dragover');
+    }
+
+    function unhighlight() {
+        dragDropArea.classList.remove('dragover');
+    }
+
+    dragDropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            const file = files[0];
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const allowedExtensions = ['.pdf', '.docx'];
+            
+            const isValidType = allowedTypes.includes(file.type) || 
+                               allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            
+            if (isValidType) {
+                // Create a new FileList-like object
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                handleFileSelect();
+            } else {
+                alert('Please select a valid DOCX or PDF file.');
+            }
+        }
+    }
 
     // File input change
     fileInput.addEventListener('change', handleFileSelect);
 
     // Remove file
-    removeFile.addEventListener('click', () => {
+    removeFile.addEventListener('click', (e) => {
+        e.stopPropagation();
         fileInput.value = '';
         fileInfo.style.display = 'none';
         submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-search me-2"></i>Extract Metadata';
     });
 
     function handleFileSelect() {
         const file = fileInput.files[0];
         if (file) {
             fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileType.textContent = getFileTypeDescription(file.name);
             fileInfo.style.display = 'block';
             submitBtn.disabled = false;
+            
+            // Add animation
+            fileInfo.classList.add('fade-in');
         }
     }
 
-    // Form submission with loading state
-    uploadForm.addEventListener('submit', function() {
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    // Form submission with loading state and progress
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show progress
+        progressContainer.style.display = 'block';
+        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Processing...';
         submitBtn.disabled = true;
+        
+        // Simulate progress (in real implementation, this would be actual upload progress)
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+            
+            if (progress >= 90) {
+                clearInterval(progressInterval);
+                progressText.textContent = 'Processing...';
+            }
+        }, 200);
+        
+        // Submit form after a short delay to show progress
+        setTimeout(() => {
+            progressBar.style.width = '100%';
+            progressText.textContent = '100%';
+            uploadForm.submit();
+        }, 2000);
+    });
+
+    // File input validation
+    fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            // Check file size (16MB limit)
+            if (file.size > 16 * 1024 * 1024) {
+                alert('File size must be less than 16MB');
+                this.value = '';
+                return;
+            }
+            
+            // Check file type
+            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const allowedExtensions = ['.pdf', '.docx'];
+            
+            const isValidType = allowedTypes.includes(file.type) || 
+                               allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            
+            if (!isValidType) {
+                alert('Please select a valid DOCX or PDF file.');
+                this.value = '';
+                return;
+            }
+        }
     });
 });
 </script>

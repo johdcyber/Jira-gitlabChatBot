@@ -1,0 +1,12 @@
+# AWS Configuration
+profile = "default"
+region-master = "us-east-1"
+region-worker = "us-east-2"
+
+# Project Configuration
+environment = "dev"
+project_name = "jenkins-infrastructure"
+
+# Security Configuration
+enable_flow_logs = true
+flow_logs_retention_days = 30
