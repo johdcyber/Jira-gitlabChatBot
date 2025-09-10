@@ -4,59 +4,76 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10 col-xl-8">
         <div class="card fade-in">
             <div class="card-header text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-cloud-upload-alt me-2"></i>
+                    <i class="fas fa-cloud-upload-alt"></i>
                     Upload Document for Metadata Extraction
                 </h4>
-                <p class="mb-0 mt-2 opacity-75">
-                    <small>Securely extract comprehensive metadata from your documents</small>
+                <p class="mb-0 mt-2 opacity-90">
+                    Securely extract comprehensive metadata from your documents
                 </p>
             </div>
-            <div class="card-body p-4">
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <p class="text-muted mb-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Upload a <strong>.docx</strong> or <strong>.pdf</strong> file to extract detailed metadata information including author, creation date, modification history, and document structure.
-                        </p>
+            <div class="card-body p-4 p-md-5">
+                <!-- Info Section -->
+                <div class="row mb-5">
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-start gap-3 mb-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-info-circle text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-2 fw-semibold">How it works</h6>
+                                <p class="text-muted mb-0">
+                                    Upload a <strong>.docx</strong> or <strong>.pdf</strong> file to extract detailed metadata information including author, creation date, modification history, and document structure.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <div class="text-center">
-                            <div class="badge bg-primary fs-6 p-2">
-                                <i class="fas fa-shield-alt me-1"></i>
+                            <div class="badge bg-primary fs-6 p-3 d-inline-flex align-items-center gap-2">
+                                <i class="fas fa-shield-alt"></i>
                                 Max: 16MB
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Upload Form -->
                 <form method="post" enctype="multipart/form-data" id="uploadForm">
                     {{ form.hidden_tag() }}
                     
                     <div class="drag-drop-area" id="dragDropArea">
                         <div class="upload-content">
-                            <i class="fas fa-cloud-upload-alt fa-4x text-primary mb-3"></i>
-                            <h5 class="mb-2">Drag and drop your file here</h5>
-                            <p class="text-muted mb-3">or click to browse your computer</p>
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h5 class="mb-3">Drag and drop your file here</h5>
+                            <p class="text-muted mb-4">or click to browse your computer</p>
                             {{ form.file(class="form-control d-none", id="file", accept=".docx,.pdf") }}
-                            <div class="supported-formats mt-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-file-word text-primary me-1"></i> DOCX
-                                    <span class="mx-2">•</span>
-                                    <i class="fas fa-file-pdf text-danger me-1"></i> PDF
-                                </small>
+                            <div class="supported-formats">
+                                <div class="d-flex justify-content-center gap-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-file-word text-primary fs-5"></i>
+                                        <span class="fw-medium">DOCX</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-file-pdf text-danger fs-5"></i>
+                                        <span class="fw-medium">PDF</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Progress Bar -->
-                    <div class="mt-3" id="progressContainer" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted">Uploading...</small>
-                            <small class="text-muted" id="progressText">0%</small>
+                    <div class="mt-4" id="progressContainer" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="loading-spinner"></div>
+                                <span class="fw-medium">Processing your file...</span>
+                            </div>
+                            <span class="text-muted fw-medium" id="progressText">0%</span>
                         </div>
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: 0%" id="progressBar"></div>
@@ -64,56 +81,57 @@
                     </div>
                     
                     <!-- File Info -->
-                    <div class="mt-3" id="fileInfo" style="display: none;">
+                    <div class="mt-4" id="fileInfo" style="display: none;">
                         <div class="alert alert-info d-flex align-items-center">
+                            <div class="feature-icon me-3">
+                                <i class="fas fa-file text-primary"></i>
+                            </div>
                             <div class="flex-grow-1">
-                                <i class="fas fa-file me-2"></i>
-                                <span id="fileName" class="fw-semibold"></span>
-                                <br>
+                                <div class="fw-semibold" id="fileName"></div>
                                 <small class="text-muted">
                                     <span id="fileSize"></span> • 
                                     <span id="fileType"></span>
                                 </small>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="removeFile" title="Remove file">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" id="removeFile" title="Remove file">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                     
                     <!-- Submit Button -->
-                    <div class="d-grid gap-2 mt-4">
+                    <div class="d-grid gap-2 mt-5">
                         {{ form.submit(class="btn btn-primary btn-lg", id="submitBtn", disabled=true) }}
                     </div>
                 </form>
                 
                 <!-- Features Section -->
-                <div class="row mt-5">
+                <div class="row mt-6">
                     <div class="col-12">
-                        <h6 class="text-muted mb-3">
-                            <i class="fas fa-star me-2"></i>
-                            What you'll get:
+                        <h6 class="text-muted mb-4 d-flex align-items-center gap-2">
+                            <i class="fas fa-star text-warning"></i>
+                            What you'll discover:
                         </h6>
                     </div>
                     <div class="col-md-6">
                         <div class="feature-item mb-3">
-                            <div class="d-flex align-items-start">
-                                <div class="feature-icon me-3">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="feature-icon">
                                     <i class="fas fa-user-circle text-primary"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">Author Information</h6>
+                                    <h6 class="mb-1 fw-semibold">Author Information</h6>
                                     <small class="text-muted">Creator, last modified by, revision history</small>
                                 </div>
                             </div>
                         </div>
                         <div class="feature-item mb-3">
-                            <div class="d-flex align-items-start">
-                                <div class="feature-icon me-3">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="feature-icon">
                                     <i class="fas fa-calendar-alt text-success"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">Date & Time</h6>
+                                    <h6 class="mb-1 fw-semibold">Date & Time</h6>
                                     <small class="text-muted">Creation, modification, and access dates</small>
                                 </div>
                             </div>
@@ -121,23 +139,23 @@
                     </div>
                     <div class="col-md-6">
                         <div class="feature-item mb-3">
-                            <div class="d-flex align-items-start">
-                                <div class="feature-icon me-3">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="feature-icon">
                                     <i class="fas fa-chart-bar text-info"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">Document Stats</h6>
+                                    <h6 class="mb-1 fw-semibold">Document Statistics</h6>
                                     <small class="text-muted">Word count, pages, tables, sections</small>
                                 </div>
                             </div>
                         </div>
                         <div class="feature-item mb-3">
-                            <div class="d-flex align-items-start">
-                                <div class="feature-icon me-3">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="feature-icon">
                                     <i class="fas fa-shield-alt text-warning"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">Security Info</h6>
+                                    <h6 class="mb-1 fw-semibold">Security Information</h6>
                                     <small class="text-muted">Encryption status, file integrity hash</small>
                                 </div>
                             </div>
@@ -146,15 +164,18 @@
                 </div>
                 
                 <!-- Security Notice -->
-                <div class="alert alert-light border mt-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-lock text-success me-3 fs-4"></i>
+                <div class="alert alert-light border mt-5">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock text-success"></i>
+                        </div>
                         <div>
-                            <h6 class="mb-1">Privacy & Security</h6>
-                            <small class="text-muted">
+                            <h6 class="mb-2 fw-semibold">Privacy & Security Guarantee</h6>
+                            <p class="text-muted mb-0">
                                 Your files are processed locally and never stored on our servers. 
                                 All data is handled securely and deleted immediately after processing.
-                            </small>
+                                We use industry-standard encryption and security practices.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -201,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Click to browse
     dragDropArea.addEventListener('click', (e) => {
-        if (e.target !== removeFile) {
+        if (e.target !== removeFile && !e.target.closest('#removeFile')) {
             fileInput.click();
         }
     });
@@ -241,27 +262,47 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (files.length > 0) {
             const file = files[0];
-            // Validate file type
-            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            const allowedExtensions = ['.pdf', '.docx'];
-            
-            const isValidType = allowedTypes.includes(file.type) || 
-                               allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-            
-            if (isValidType) {
-                // Create a new FileList-like object
+            if (validateFile(file)) {
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(file);
                 fileInput.files = dataTransfer.files;
                 handleFileSelect();
-            } else {
-                alert('Please select a valid DOCX or PDF file.');
             }
         }
     }
 
+    // File validation
+    function validateFile(file) {
+        // Check file size (16MB limit)
+        if (file.size > 16 * 1024 * 1024) {
+            showToast('File size must be less than 16MB', 'error');
+            return false;
+        }
+        
+        // Check file type
+        const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedExtensions = ['.pdf', '.docx'];
+        
+        const isValidType = allowedTypes.includes(file.type) || 
+                           allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+        
+        if (!isValidType) {
+            showToast('Please select a valid DOCX or PDF file', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
     // File input change
-    fileInput.addEventListener('change', handleFileSelect);
+    fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file && validateFile(file)) {
+            handleFileSelect();
+        } else if (file) {
+            this.value = '';
+        }
+    });
 
     // Remove file
     removeFile.addEventListener('click', (e) => {
@@ -292,10 +333,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show progress
         progressContainer.style.display = 'block';
-        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Processing...';
+        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Processing Document...';
         submitBtn.disabled = true;
         
-        // Simulate progress (in real implementation, this would be actual upload progress)
+        // Simulate progress
         let progress = 0;
         const progressInterval = setInterval(() => {
             progress += Math.random() * 15;
@@ -306,43 +347,52 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (progress >= 90) {
                 clearInterval(progressInterval);
-                progressText.textContent = 'Processing...';
+                progressText.textContent = 'Finalizing...';
             }
         }, 200);
         
-        // Submit form after a short delay to show progress
+        // Submit form after showing progress
         setTimeout(() => {
             progressBar.style.width = '100%';
             progressText.textContent = '100%';
             uploadForm.submit();
-        }, 2000);
+        }, 2500);
     });
 
-    // File input validation
-    fileInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            // Check file size (16MB limit)
-            if (file.size > 16 * 1024 * 1024) {
-                alert('File size must be less than 16MB');
-                this.value = '';
-                return;
-            }
-            
-            // Check file type
-            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            const allowedExtensions = ['.pdf', '.docx'];
-            
-            const isValidType = allowedTypes.includes(file.type) || 
-                               allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-            
-            if (!isValidType) {
-                alert('Please select a valid DOCX or PDF file.');
-                this.value = '';
-                return;
-            }
-        }
-    });
+    // Toast notification system
+    function showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '9999';
+        document.body.appendChild(container);
+        return container;
+    }
 });
 </script>
 {% endblock %}
